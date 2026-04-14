@@ -694,17 +694,7 @@
             let msalApp = null;
             let msAuthReady = false;
 
-            // Initialize MSAL instance
-            if (MS_CLIENT_ID) {
-                msalApp = new msal.PublicClientApplication({
-                    auth: {
-                        clientId: MS_CLIENT_ID,
-                        authority: `https://login.microsoftonline.com/${MS_TENANT_ID}`,
-                        redirectUri: MS_REDIRECT_URI
-                    }
-                });
-                msAuthReady = true;
-            }
+            // MSAL is initialized via initializeMicrosoftAuth() below
 
             /**
              * Updates the status message on the login screen
@@ -841,11 +831,6 @@
             async function signInWithMicrosoft() {
                 // Clear previous status
                 setLoginStatus('');
-
-                if (window.location.protocol === 'file:') {
-                    setLoginStatus('Error: Microsoft sign-in requires a web server (http:// or https://), it will not work on file:// paths.', true);
-                    return;
-                }
 
                 if (!MS_CLIENT_ID || MS_CLIENT_ID === 'YOUR_CLIENT_ID_HERE') {
                     setLoginStatus("Action Required: Please set your Microsoft Client ID in script.js (CONFIG object) or via localStorage.", true);
@@ -1003,90 +988,7 @@
                 });
             }
 
-            // Enhanced Microsoft Sign-in Handler with Debugging Logs
-            async function handleMicrosoftLogin() {
-                if (!msAuthReady || !msalApp) {
-                    setLoginStatus('Microsoft login is not configured.', true);
-                    console.error('MSAL is not initialized. Check MS_CLIENT_ID and configuration.');
-                    return;
-                }
 
-                try {
-                    setLoginStatus('Signing in with Microsoft...', false);
-                    console.log('Initiating Microsoft login with MSAL configuration:', {
-                        clientId: MS_CLIENT_ID,
-                        tenantId: MS_TENANT_ID,
-                        redirectUri: MS_REDIRECT_URI
-                    });
-
-                    const loginResponse = await msalApp.loginPopup({
-                        scopes: ['User.Read']
-                    });
-
-                    console.log('Microsoft login response:', loginResponse);
-
-                    const account = loginResponse.account;
-                    if (account) {
-                        setLoginStatus(`Welcome, ${account.username}!`, false);
-                        console.log('Microsoft Login Successful:', account);
-
-                        // Optional: Validate the signed-in user with the backend
-                        const response = await fetch(LOGIN_SCRIPT_URL, {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json'
-                            },
-                            body: JSON.stringify({
-                                sheetName: LOGIN_SHEET_NAME,
-                                email: account.username
-                            })
-                        });
-
-                        const result = await response.json();
-                        console.log('Backend validation response:', result);
-
-                        if (response.ok && result.success) {
-                            setLoginStatus(`Welcome, ${result.username}!`, false);
-                            console.log('User validated with backend:', result);
-                            // Perform additional actions like redirecting or storing user info
-                        } else {
-                            setLoginStatus(result.message || 'Microsoft account not recognized.', true);
-                            console.warn('Backend validation failed:', result);
-                        }
-                    } else {
-                        setLoginStatus('Microsoft login failed. Please try again.', true);
-                        console.warn('No account information returned from Microsoft login.');
-                    }
-                } catch (error) {
-                    console.error('Microsoft Login Error:', error);
-                    setLoginStatus('An error occurred during Microsoft login.', true);
-                }
-            }
-
-            // Attach event listener to Microsoft login button
-            if (msLoginBtn) {
-                msLoginBtn.addEventListener('click', handleMicrosoftLogin);
-            }
-
-            // Debugging Microsoft Sign-in Button Click
-            if (msLoginBtn) {
-                msLoginBtn.addEventListener('click', () => {
-                    console.log('Microsoft Sign-in button clicked.');
-                });
-            } else {
-                console.error('Microsoft Sign-in button not found. Check the button ID.');
-            }
-
-            // Test MSAL Initialization
-            if (msAuthReady && msalApp) {
-                console.log('MSAL initialized successfully with configuration:', {
-                    clientId: MS_CLIENT_ID,
-                    tenantId: MS_TENANT_ID,
-                    redirectUri: MS_REDIRECT_URI
-                });
-            } else {
-                console.error('MSAL initialization failed. Check MS_CLIENT_ID, MS_TENANT_ID, and MS_REDIRECT_URI.');
-            }
         });
 
     </script>
