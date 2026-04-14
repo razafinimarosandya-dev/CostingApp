@@ -656,7 +656,7 @@
             // --- Microsoft Sign-in Configuration ---
             // PASTE YOUR CLIENT ID HERE TO ENABLE MICROSOFT LOGIN:
             const CONFIG = {
-                MS_CLIENT_ID: '2e76a6d0-5c47-4ffd-9c77-bf6f3157c453', // <-- Enter your Azure Client ID here
+                MS_CLIENT_ID: 'e78248f9-d638-474b-bb66-69ec900b379a', // <-- Enter your Azure Client ID here
                 MS_TENANT_ID: 'f464ee19-01bf-4e2d-8e88-32603f329095',
                 MS_REDIRECT_URI: window.location.href.split('?')[0] // Current URL without query params
             };
@@ -778,12 +778,6 @@
                     return;
                 }
 
-                if (window.location.protocol === 'file:') {
-                    msLoginBtn.title = 'Microsoft sign-in requires HTTP/HTTPS.';
-                    msLoginBtn.classList.add('disabled');
-                    return;
-                }
-
                 if (!MS_CLIENT_ID || MS_CLIENT_ID === 'YOUR_CLIENT_ID_HERE') {
                     console.info('Microsoft Client ID not configured.');
                     msLoginBtn.title = 'Microsoft sign-in not configured.';
@@ -838,8 +832,12 @@
                 }
 
                 if (!msalApp || !msAuthReady) {
-                    setLoginStatus('Microsoft login is still initializing. Please wait a moment and try again.', true);
-                    return;
+                    setLoginStatus('Initializing Microsoft login...', false);
+                    await initializeMicrosoftAuth();
+                    if (!msalApp || !msAuthReady) {
+                        setLoginStatus('Microsoft login failed to initialize. Check console for details.', true);
+                        return;
+                    }
                 }
 
                 const originalBtnHtml = msLoginBtn.innerHTML;
