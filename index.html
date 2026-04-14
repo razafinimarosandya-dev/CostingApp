@@ -1,0 +1,1095 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | Costing Portal</title>
+    <meta name="description"
+        content="Secure login access to the Costing Portal. Manage your production tasks and analytics.">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<style>
+    :root {
+        --primary: #4f46e5;
+        --primary-hover: #4338ca;
+        --accent: #8b5cf6;
+        --bg-dark: #0f172a;
+        --card-bg: rgba(255, 255, 255, 0.95);
+        --card-glass: rgba(255, 255, 255, 0.85);
+        --text-dark: #1e293b;
+        --text-muted: #64748b;
+        --input-bg: #f8fafc;
+        --input-border: #e2e8f0;
+        --input-focus: #4f46e5;
+        --success: #10b981;
+        --error: #ef4444;
+        --transition-fast: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        --transition-slow: 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        --shadow-premium: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    }
+
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: 'Outfit', sans-serif;
+    }
+
+    body {
+        background-color: var(--bg-dark);
+        color: var(--text-dark);
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow-x: hidden;
+        position: relative;
+        padding: 20px;
+    }
+
+    /* Dynamic background with gradients and floating blobs */
+    body::before,
+    body::after {
+        content: '';
+        position: fixed;
+        width: 600px;
+        height: 600px;
+        border-radius: 50%;
+        filter: blur(80px);
+        z-index: -1;
+        opacity: 0.4;
+        animation: pulse 15s infinite alternate;
+    }
+
+    body::before {
+        background: radial-gradient(circle, var(--primary), transparent);
+        top: -200px;
+        right: -100px;
+    }
+
+    body::after {
+        background: radial-gradient(circle, var(--accent), transparent);
+        bottom: -200px;
+        left: -100px;
+        animation-delay: -7s;
+    }
+
+    @keyframes pulse {
+        0% {
+            transform: translate(0, 0) scale(1);
+        }
+
+        100% {
+            transform: translate(50px, 50px) scale(1.1);
+        }
+    }
+
+    .login-container {
+        width: 100%;
+        max-width: 460px;
+        perspective: 1000px;
+    }
+
+    .login-card {
+        background: var(--card-glass);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        border-radius: 28px;
+        padding: 56px 48px;
+        box-shadow: var(--shadow-premium);
+        animation: slideUp var(--transition-slow);
+        position: relative;
+        overflow: hidden;
+    }
+
+    @keyframes slideUp {
+        from {
+            opacity: 0;
+            transform: translateY(40px) rotateX(-5deg);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0) rotateX(0);
+        }
+    }
+
+    .login-header {
+        text-align: center;
+        margin-bottom: 40px;
+    }
+
+    .logo {
+        width: 64px;
+        height: 64px;
+        background: linear-gradient(135deg, var(--primary), var(--accent));
+        border-radius: 18px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 20px;
+        font-size: 28px;
+        color: white;
+        box-shadow: 0 10px 20px rgba(79, 70, 229, 0.3);
+        transition: transform var(--transition-fast);
+    }
+
+    .logo:hover {
+        transform: rotate(5deg) scale(1.05);
+    }
+
+    .login-header h1 {
+        font-size: 32px;
+        font-weight: 700;
+        margin-bottom: 10px;
+        letter-spacing: -1px;
+        color: var(--bg-dark);
+    }
+
+    .login-header p {
+        color: var(--text-muted);
+        font-size: 16px;
+        font-weight: 400;
+    }
+
+    .login-form .input-group {
+        margin-bottom: 28px;
+    }
+
+    .label-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 10px;
+    }
+
+    .input-group label {
+        display: block;
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--bg-dark);
+    }
+
+    .forgot-link {
+        font-size: 13px;
+        color: var(--primary);
+        text-decoration: none;
+        font-weight: 600;
+        transition: var(--transition-fast);
+    }
+
+    .forgot-link:hover {
+        color: var(--accent);
+    }
+
+    .input-wrapper {
+        position: relative;
+        display: flex;
+        align-items: center;
+    }
+
+    .input-wrapper i {
+        position: absolute;
+        left: 18px;
+        color: var(--text-muted);
+        font-size: 18px;
+        transition: var(--transition-fast);
+    }
+
+    .input-wrapper input {
+        width: 100%;
+        padding: 16px 18px 16px 52px;
+        background: rgba(255, 255, 255, 0.6);
+        border: 1px solid var(--input-border);
+        border-radius: 16px;
+        color: var(--bg-dark);
+        font-size: 16px;
+        font-weight: 500;
+        outline: none;
+        transition: all var(--transition-fast);
+    }
+
+    .input-wrapper input:focus {
+        border-color: var(--primary);
+        background: white;
+        box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.15);
+    }
+
+    .input-wrapper input:focus+i {
+        color: var(--primary);
+    }
+
+    .toggle-btn {
+        position: absolute;
+        right: 14px;
+        background: none;
+        border: none;
+        color: var(--text-muted);
+        cursor: pointer;
+        padding: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: var(--transition-fast);
+    }
+
+    .toggle-btn:hover {
+        color: var(--bg-dark);
+    }
+
+    .remember-me {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 32px;
+    }
+
+    .remember-me input[type="checkbox"] {
+        width: 20px;
+        height: 20px;
+        border-radius: 6px;
+        accent-color: var(--primary);
+        cursor: pointer;
+    }
+
+    .remember-me label {
+        font-size: 15px;
+        color: var(--text-muted);
+        font-weight: 500;
+        cursor: pointer;
+        user-select: none;
+    }
+
+    .submit-btn {
+        width: 100%;
+        background: linear-gradient(to right, var(--primary), var(--accent));
+        color: white;
+        border: none;
+        border-radius: 16px;
+        padding: 16px;
+        font-size: 18px;
+        font-weight: 600;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        transition: all var(--transition-fast);
+        box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.4);
+    }
+
+    .submit-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 15px 20px -5px rgba(79, 70, 229, 0.5);
+        filter: brightness(1.1);
+    }
+
+    .submit-btn:active {
+        transform: translateY(0);
+    }
+
+    .oauth-divider {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        margin: 32px 0;
+        color: var(--text-muted);
+        font-size: 13px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .oauth-divider::before,
+    .oauth-divider::after {
+        content: '';
+        flex: 1;
+        height: 1px;
+        background: var(--input-border);
+    }
+
+    .microsoft-btn {
+        width: 100%;
+        background: white;
+        border: 1px solid var(--input-border);
+        color: #3c3c3c;
+        border-radius: 16px;
+        padding: 16px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 14px;
+        transition: all var(--transition-fast);
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    }
+
+    .microsoft-btn:hover {
+        background: #fafafa;
+        border-color: #d1d5db;
+        transform: translateY(-1px);
+        box-shadow: 0 6px 10px -1px rgba(0, 0, 0, 0.08);
+    }
+
+    .microsoft-btn:active {
+        transform: translateY(0);
+    }
+
+    .microsoft-btn:disabled {
+        cursor: not-allowed;
+        opacity: 0.6;
+        filter: grayscale(1);
+        transform: none;
+    }
+
+    .ms-logo {
+        width: 20px;
+        height: 20px;
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 2.5px;
+    }
+
+    .ms-logo span:nth-child(1) {
+        background: #f25022;
+    }
+
+    .ms-logo span:nth-child(2) {
+        background: #7fba00;
+    }
+
+    .ms-logo span:nth-child(3) {
+        background: #00a4ef;
+    }
+
+    .ms-logo span:nth-child(4) {
+        background: #ffb900;
+    }
+
+    .create-account-btn {
+        width: 100%;
+        margin-top: 16px;
+        background: transparent;
+        border: 1px solid var(--primary);
+        color: var(--primary);
+        border-radius: 16px;
+        padding: 14px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all var(--transition-fast);
+    }
+
+    .create-account-btn:hover {
+        background: rgba(79, 70, 229, 0.05);
+        border-color: var(--accent);
+        color: var(--accent);
+    }
+
+    .login-status {
+        margin-top: 24px;
+        font-size: 14px;
+        font-weight: 500;
+        text-align: center;
+        min-height: 20px;
+    }
+
+    .login-footer {
+        text-align: center;
+        margin-top: 32px;
+    }
+
+    .login-footer p {
+        color: var(--text-muted);
+        font-size: 15px;
+    }
+
+    .login-footer a {
+        color: var(--primary);
+        text-decoration: none;
+        font-weight: 700;
+        margin-left: 6px;
+    }
+
+    .login-footer a:hover {
+        text-decoration: underline;
+    }
+
+    /* Modal Styles */
+    .modal-backdrop {
+        position: fixed;
+        inset: 0;
+        background: rgba(15, 23, 42, 0.7);
+        backdrop-filter: blur(8px);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: 24px;
+        z-index: 1000;
+        animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+        }
+
+        to {
+            opacity: 1;
+        }
+    }
+
+    .modal-backdrop.open {
+        display: flex;
+    }
+
+    .modal-card {
+        width: 100%;
+        max-width: 500px;
+        background: white;
+        border-radius: 24px;
+        padding: 40px;
+        box-shadow: 0 40px 80px rgba(0, 0, 0, 0.4);
+        position: relative;
+    }
+
+    .modal-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 32px;
+    }
+
+    .modal-head h2 {
+        font-size: 24px;
+        font-weight: 700;
+        letter-spacing: -0.5px;
+    }
+
+    .icon-btn {
+        width: 40px;
+        height: 40px;
+        border-radius: 12px;
+        border: 1px solid var(--input-border);
+        background: #f8fafc;
+        color: var(--text-dark);
+        font-size: 20px;
+        cursor: pointer;
+        transition: all var(--transition-fast);
+    }
+
+    .icon-btn:hover {
+        background: #f1f5f9;
+        border-color: #cbd5e1;
+    }
+
+    .modal-form {
+        display: grid;
+        gap: 20px;
+    }
+
+    .modal-form label {
+        font-size: 13px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: var(--text-muted);
+    }
+
+    .modal-form input {
+        width: 100%;
+        padding: 14px;
+        border: 1px solid var(--input-border);
+        border-radius: 14px;
+        font-size: 15px;
+        background: #f8fafc;
+    }
+
+    .modal-actions {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+        margin-top: 12px;
+    }
+
+    /* Mobile Responsiveness */
+    @media (max-width: 480px) {
+        .login-card {
+            padding: 40px 24px;
+        }
+
+        .modal-card {
+            padding: 30px 20px;
+        }
+
+        .modal-actions {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<body>
+    <main class="login-container">
+        <section class="login-card">
+            <header class="login-header">
+                <div class="logo" aria-hidden="true">
+                    <i class="fas fa-layer-group"></i>
+                </div>
+                <h1>Welcome Back</h1>
+                <p>Enter your credentials to access the portal</p>
+            </header>
+
+            <form id="loginForm" class="login-form">
+                <div class="input-group">
+                    <label for="email">Email Address</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-envelope" aria-hidden="true"></i>
+                        <input type="email" id="email" placeholder="name@company.com" required autocomplete="email">
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <div class="label-row">
+                        <label for="password">Password</label>
+                        <a href="#" class="forgot-link">Forgot Password?</a>
+                    </div>
+                    <div class="input-wrapper">
+                        <i class="fas fa-lock" aria-hidden="true"></i>
+                        <input type="password" id="password" placeholder="••••••••" required
+                            autocomplete="current-password">
+                        <button type="button" id="togglePassword" class="toggle-btn"
+                            aria-label="Toggle password visibility">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="remember-me">
+                    <input type="checkbox" id="remember">
+                    <label for="remember">Keep me signed in for 30 days</label>
+                </div>
+
+                <button type="submit" id="loginBtn" class="submit-btn">
+                    <span>Sign In</span>
+                    <i class="fas fa-arrow-right" aria-hidden="true"></i>
+                </button>
+            </form>
+
+            <div class="oauth-divider"><span>or</span></div>
+
+            <button type="button" id="msLoginBtn" class="microsoft-btn">
+                <div class="ms-logo" aria-hidden="true">
+                    <span></span><span></span><span></span><span></span>
+                </div>
+                <span>Sign in with Microsoft</span>
+            </button>
+
+            <button type="button" id="createAccountBtn" class="create-account-btn">Create New Account</button>
+
+            <p id="loginStatus" class="login-status" aria-live="polite"></p>
+
+            <footer class="login-footer">
+                <p>Trouble signing in? <a href="#">Contact Support</a></p>
+            </footer>
+        </section>
+    </main>
+
+    <!-- Create Account Modal -->
+    <div id="createAccountModal" class="modal-backdrop" aria-hidden="true">
+        <section class="modal-card" role="dialog" aria-modal="true" aria-labelledby="createAccountTitle">
+            <div class="modal-head">
+                <h2 id="createAccountTitle">Create Account</h2>
+                <button type="button" id="closeCreateAccountBtn" class="icon-btn" aria-label="Close">×</button>
+            </div>
+            <form id="createAccountForm" class="modal-form">
+                <div>
+                    <label for="newUsername">Username</label>
+                    <input id="newUsername" type="text" placeholder="Enter username" required>
+                </div>
+
+                <div>
+                    <label for="newEmail">Email</label>
+                    <input id="newEmail" type="email" placeholder="you@example.com" required>
+                </div>
+
+                <div>
+                    <label for="newPassword">Password</label>
+                    <input id="newPassword" type="password" placeholder="Create password" required>
+                </div>
+
+                <div>
+                    <label for="newConfirmPassword">Confirm Password</label>
+                    <input id="newConfirmPassword" type="password" placeholder="Re-enter password" required>
+                </div>
+
+                <div>
+                    <label for="newJobTitle">Job Title</label>
+                    <input id="newJobTitle" type="text" placeholder="e.g. Merchandiser" required>
+                </div>
+
+                <div class="remember-me">
+                    <input id="rememberNewAccount" type="checkbox" checked>
+                    <label for="rememberNewAccount">Remember on this device</label>
+                </div>
+
+                <div class="modal-actions">
+                    <button id="cancelCreateAccountBtn" type="button" class="create-account-btn">Cancel</button>
+                    <button type="submit" class="submit-btn">Create Account</button>
+                </div>
+            </form>
+        </section>
+    </div>
+
+    <!-- Microsoft Authentication Library -->
+    <script src="https://alcdn.msauth.net/browser/2.39.0/js/msal-browser.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- Microsoft Sign-in Configuration ---
+            // PASTE YOUR CLIENT ID HERE TO ENABLE MICROSOFT LOGIN:
+            const CONFIG = {
+                MS_CLIENT_ID: 'YOUR_CLIENT_ID_HERE', // <-- Enter your Azure Client ID here
+                MS_TENANT_ID: 'common',
+                MS_REDIRECT_URI: window.location.href.split('?')[0] // Current URL without query params
+            };
+            // ----------------------------------------
+
+            const loginForm = document.getElementById('loginForm');
+            const togglePassword = document.getElementById('togglePassword');
+            const passwordInput = document.getElementById('password');
+            const loginBtn = document.getElementById('loginBtn');
+            const loginStatus = document.getElementById('loginStatus');
+            const msLoginBtn = document.getElementById('msLoginBtn');
+            const createAccountBtn = document.getElementById('createAccountBtn');
+            const createAccountModal = document.getElementById('createAccountModal');
+            const createAccountForm = document.getElementById('createAccountForm');
+            const closeCreateAccountBtn = document.getElementById('closeCreateAccountBtn');
+            const cancelCreateAccountBtn = document.getElementById('cancelCreateAccountBtn');
+            const newUsernameInput = document.getElementById('newUsername');
+            const newEmailInput = document.getElementById('newEmail');
+            const newPasswordInput = document.getElementById('newPassword');
+            const newConfirmPasswordInput = document.getElementById('newConfirmPassword');
+            const newJobTitleInput = document.getElementById('newJobTitle');
+            const rememberNewAccount = document.getElementById('rememberNewAccount');
+
+            // Configuration from localStorage (if set, overrides CONFIG above)
+            const DEFAULT_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxMVYOSwIwbUchXuqOeH_r5h7Zxu1AWH4WkvxGHciuVYz1a-N2OOrtagBqCbTyRSgdjHA/exec';
+            const LOGIN_SCRIPT_URL = localStorage.getItem('ACC_SCRIPT_URL') || DEFAULT_SCRIPT_URL;
+            const LOGIN_SHEET_NAME = (localStorage.getItem('LOGIN_SHEET_NAME') || 'Login').trim() || 'Login';
+
+            // Microsoft Auth Configuration - Priority: localStorage -> Hardcoded CONFIG
+            const MS_CLIENT_ID = (localStorage.getItem('ACC_MS_CLIENT_ID') || CONFIG.MS_CLIENT_ID).trim();
+            const MS_TENANT_ID = (localStorage.getItem('ACC_MS_TENANT_ID') || CONFIG.MS_TENANT_ID).trim();
+            const MS_REDIRECT_URI = (localStorage.getItem('ACC_MS_REDIRECT_URI') || CONFIG.MS_REDIRECT_URI).trim();
+
+            const REMEMBERED_USER_KEY = 'ACC_REMEMBERED_USER';
+            let msalApp = null;
+            let msAuthReady = false;
+
+            // Initialize MSAL instance
+            if (MS_CLIENT_ID) {
+                msalApp = new msal.PublicClientApplication({
+                    auth: {
+                        clientId: MS_CLIENT_ID,
+                        authority: `https://login.microsoftonline.com/${MS_TENANT_ID}`,
+                        redirectUri: MS_REDIRECT_URI
+                    }
+                });
+                msAuthReady = true;
+            }
+
+            /**
+             * Updates the status message on the login screen
+             */
+            function setLoginStatus(message, isError = false) {
+                if (!loginStatus) return;
+                loginStatus.textContent = message || '';
+                loginStatus.style.color = isError ? 'var(--error)' : 'var(--text-muted)';
+
+                // Add a subtle animation to the status
+                loginStatus.classList.remove('animate-fade-in');
+                void loginStatus.offsetWidth; // Trigger reflow
+                loginStatus.classList.add('animate-fade-in');
+            }
+
+            /**
+             * Persists user session details
+             */
+            function setRememberedUser(data) {
+                localStorage.setItem(REMEMBERED_USER_KEY, JSON.stringify(data));
+            }
+
+            function getRememberedUser() {
+                try {
+                    return JSON.parse(localStorage.getItem(REMEMBERED_USER_KEY) || 'null');
+                } catch (_e) {
+                    return null;
+                }
+            }
+
+            function clearRememberedUser() {
+                localStorage.removeItem(REMEMBERED_USER_KEY);
+            }
+
+            /**
+             * Completes the login process and notifies the parent application
+             */
+            function completeSocialLogin(provider, user) {
+                const rememberCheck = document.getElementById('remember');
+                const loginId = user.email || user.loginId || '';
+                const username = user.name || user.username || '';
+
+                if (rememberCheck && rememberCheck.checked) {
+                    setRememberedUser({
+                        provider,
+                        loginId,
+                        username,
+                        email: user.email || '',
+                        jobTitle: user.jobTitle || ''
+                    });
+                }
+
+                const displayName = username || loginId || `${provider} user`;
+                setLoginStatus(`Successfully signed in as ${displayName}`);
+
+                // Notify parent window of successful login
+                window.parent.postMessage({
+                    action: 'login',
+                    email: user.email || '',
+                    loginId,
+                    name: username,
+                    provider
+                }, '*');
+
+                // Auto-redirect to the home portal
+                setTimeout(() => {
+                    window.location.href = "https://costing-home.vercel.app/";
+                }, 500);
+            }
+
+            /**
+             * Initializes MSAL library for Microsoft Sign-in
+             */
+            async function initializeMicrosoftAuth() {
+                if (!msLoginBtn) return;
+
+                // Validation checks
+                if (typeof window.msal === 'undefined') {
+                    console.warn('MSAL library not loaded.');
+                    msLoginBtn.title = 'Microsoft sign-in SDK failed to load.';
+                    return;
+                }
+
+                if (window.location.protocol === 'file:') {
+                    msLoginBtn.title = 'Microsoft sign-in requires HTTP/HTTPS.';
+                    msLoginBtn.classList.add('disabled');
+                    return;
+                }
+
+                if (!MS_CLIENT_ID || MS_CLIENT_ID === 'YOUR_CLIENT_ID_HERE') {
+                    console.info('Microsoft Client ID not configured.');
+                    msLoginBtn.title = 'Microsoft sign-in not configured.';
+                    return;
+                }
+
+                try {
+                    msalApp = new window.msal.PublicClientApplication({
+                        auth: {
+                            clientId: MS_CLIENT_ID,
+                            authority: `https://login.microsoftonline.com/${MS_TENANT_ID}`,
+                            redirectUri: MS_REDIRECT_URI
+                        },
+                        cache: {
+                            cacheLocation: 'localStorage',
+                            storeAuthStateInCookie: false
+                        }
+                    });
+
+                    if (typeof msalApp.initialize === 'function') {
+                        await msalApp.initialize();
+                    }
+
+                    // Handle redirect return
+                    const redirectResult = await msalApp.handleRedirectPromise();
+                    if (redirectResult && redirectResult.account) {
+                        completeSocialLogin('microsoft', {
+                            email: redirectResult.account.username || '',
+                            name: redirectResult.account.name || '',
+                            loginId: redirectResult.account.username || ''
+                        });
+                    }
+
+                    msAuthReady = true;
+                    msLoginBtn.disabled = false;
+                } catch (error) {
+                    console.error('Microsoft auth initialization failed:', error);
+                    setLoginStatus('Microsoft setup failed. Check console for details.', true);
+                }
+            }
+
+            /**
+             * Performs Microsoft sign-in flow
+             */
+            async function signInWithMicrosoft() {
+                // Clear previous status
+                setLoginStatus('');
+
+                if (window.location.protocol === 'file:') {
+                    setLoginStatus('Error: Microsoft sign-in requires a web server (http:// or https://), it will not work on file:// paths.', true);
+                    return;
+                }
+
+                if (!MS_CLIENT_ID || MS_CLIENT_ID === 'YOUR_CLIENT_ID_HERE') {
+                    setLoginStatus("Action Required: Please set your Microsoft Client ID in script.js (CONFIG object) or via localStorage.", true);
+                    return;
+                }
+
+                if (!msalApp || !msAuthReady) {
+                    setLoginStatus('Microsoft login is still initializing. Please wait a moment and try again.', true);
+                    return;
+                }
+
+                const originalBtnHtml = msLoginBtn.innerHTML;
+                msLoginBtn.disabled = true;
+                msLoginBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> <span>Connecting...</span>';
+
+                try {
+                    const loginRequest = {
+                        scopes: ['openid', 'profile', 'email', 'User.Read'],
+                        prompt: 'select_account'
+                    };
+
+                    let loginResponse;
+                    try {
+                        // Try popup first
+                        loginResponse = await msalApp.loginPopup(loginRequest);
+                    } catch (popupError) {
+                        // Fallback to redirect if popup is blocked
+                        const code = String(popupError.errorCode || '').toLowerCase();
+                        if (code.includes('popup') || code.includes('window_timeout')) {
+                            setLoginStatus('Popup blocked. Redirecting to Microsoft sign-in page...');
+                            await msalApp.loginRedirect(loginRequest);
+                            return;
+                        }
+                        throw popupError;
+                    }
+
+                    const account = loginResponse?.account || msalApp.getAllAccounts()[0];
+                    if (!account) throw new Error('No account returned from Microsoft.');
+
+                    completeSocialLogin('microsoft', {
+                        email: account.username || '',
+                        name: account.name || '',
+                        loginId: account.username || ''
+                    });
+                } catch (error) {
+                    console.error('Microsoft login error:', error);
+                    const msg = error.errorMessage || error.message || 'Verification failed';
+
+                    if (msg.includes('Redirect URI')) {
+                        setLoginStatus(`Setup Error: Redirect URI mismatch. Ensure "${MS_REDIRECT_URI}" is registered in your Azure Portal.`, true);
+                    } else {
+                        setLoginStatus(`Microsoft Sign-in Error: ${msg}`, true);
+                    }
+                } finally {
+                    msLoginBtn.disabled = false;
+                    msLoginBtn.innerHTML = originalBtnHtml;
+                }
+            }
+
+            // --- Standard Login Handling ---
+
+            async function verifyLoginCredentials(loginId, password) {
+                const url = `${LOGIN_SCRIPT_URL}?sheet=${encodeURIComponent(LOGIN_SHEET_NAME)}`;
+                const response = await fetch(url, {
+                    method: 'POST',
+                    mode: 'cors',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify({
+                        action: 'LOGIN_VERIFY',
+                        sheet: LOGIN_SHEET_NAME,
+                        loginId: loginId,
+                        password: password
+                    })
+                });
+                if (!response.ok) throw new Error(`Server returned HTTP ${response.status}`);
+                const text = await response.text();
+                return JSON.parse(text.replace(/^\uFEFF/, '').trim());
+            }
+
+            // Toggle Password Visibility
+            if (togglePassword && passwordInput) {
+                togglePassword.addEventListener('click', () => {
+                    const isPassword = passwordInput.getAttribute('type') === 'password';
+                    passwordInput.setAttribute('type', isPassword ? 'text' : 'password');
+                    const icon = togglePassword.querySelector('i');
+                    icon.classList.toggle('fa-eye');
+                    icon.classList.toggle('fa-eye-slash');
+                });
+            }
+
+            // Form Submission
+            if (loginForm) {
+                const remembered = getRememberedUser();
+                if (remembered && remembered.loginId) {
+                    document.getElementById('email').value = remembered.loginId;
+                    const rememberCheck = document.getElementById('remember');
+                    if (rememberCheck) rememberCheck.checked = true;
+                }
+
+                loginForm.addEventListener('submit', async (event) => {
+                    event.preventDefault();
+
+                    const email = document.getElementById('email').value.trim();
+                    const password = document.getElementById('password').value.trim();
+
+                    if (!email || !password) {
+                        setLoginStatus('Please enter both email and password.', true);
+                        return;
+                    }
+
+                    loginBtn.disabled = true;
+                    const originalHtml = loginBtn.innerHTML;
+                    loginBtn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> <span>Verifying...</span>';
+
+                    try {
+                        const result = await verifyLoginCredentials(email, password);
+                        if (result.success) {
+                            completeSocialLogin('password', result.user || { email });
+                        } else {
+                            setLoginStatus(result.message || 'Invalid credentials.', true);
+                        }
+                    } catch (error) {
+                        console.error('Login error:', error);
+                        setLoginStatus('Authentication service unavailable.', true);
+                    } finally {
+                        loginBtn.disabled = false;
+                        loginBtn.innerHTML = originalHtml;
+                    }
+                });
+            }
+
+            // Initialize Microsoft Auth
+            initializeMicrosoftAuth().catch(err => console.error('MS Initializer:', err));
+
+            if (msLoginBtn) {
+                msLoginBtn.addEventListener('click', signInWithMicrosoft);
+            }
+
+            // Modal Handling
+            if (createAccountBtn && createAccountModal) {
+                createAccountBtn.addEventListener('click', () => {
+                    createAccountModal.classList.add('open');
+                    createAccountModal.setAttribute('aria-hidden', 'false');
+                });
+
+                const closeModal = () => {
+                    createAccountModal.classList.remove('open');
+                    createAccountModal.setAttribute('aria-hidden', 'true');
+                };
+
+                closeCreateAccountBtn?.addEventListener('click', closeModal);
+                cancelCreateAccountBtn?.addEventListener('click', closeModal);
+                createAccountModal.addEventListener('click', (e) => {
+                    if (e.target === createAccountModal) closeModal();
+                });
+            }
+
+            // Enhanced Microsoft Sign-in Handler with Debugging Logs
+            async function handleMicrosoftLogin() {
+                if (!msAuthReady || !msalApp) {
+                    setLoginStatus('Microsoft login is not configured.', true);
+                    console.error('MSAL is not initialized. Check MS_CLIENT_ID and configuration.');
+                    return;
+                }
+
+                try {
+                    setLoginStatus('Signing in with Microsoft...', false);
+                    console.log('Initiating Microsoft login with MSAL configuration:', {
+                        clientId: MS_CLIENT_ID,
+                        tenantId: MS_TENANT_ID,
+                        redirectUri: MS_REDIRECT_URI
+                    });
+
+                    const loginResponse = await msalApp.loginPopup({
+                        scopes: ['User.Read']
+                    });
+
+                    console.log('Microsoft login response:', loginResponse);
+
+                    const account = loginResponse.account;
+                    if (account) {
+                        setLoginStatus(`Welcome, ${account.username}!`, false);
+                        console.log('Microsoft Login Successful:', account);
+
+                        // Optional: Validate the signed-in user with the backend
+                        const response = await fetch(LOGIN_SCRIPT_URL, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                sheetName: LOGIN_SHEET_NAME,
+                                email: account.username
+                            })
+                        });
+
+                        const result = await response.json();
+                        console.log('Backend validation response:', result);
+
+                        if (response.ok && result.success) {
+                            setLoginStatus(`Welcome, ${result.username}!`, false);
+                            console.log('User validated with backend:', result);
+                            // Perform additional actions like redirecting or storing user info
+                        } else {
+                            setLoginStatus(result.message || 'Microsoft account not recognized.', true);
+                            console.warn('Backend validation failed:', result);
+                        }
+                    } else {
+                        setLoginStatus('Microsoft login failed. Please try again.', true);
+                        console.warn('No account information returned from Microsoft login.');
+                    }
+                } catch (error) {
+                    console.error('Microsoft Login Error:', error);
+                    setLoginStatus('An error occurred during Microsoft login.', true);
+                }
+            }
+
+            // Attach event listener to Microsoft login button
+            if (msLoginBtn) {
+                msLoginBtn.addEventListener('click', handleMicrosoftLogin);
+            }
+
+            // Debugging Microsoft Sign-in Button Click
+            if (msLoginBtn) {
+                msLoginBtn.addEventListener('click', () => {
+                    console.log('Microsoft Sign-in button clicked.');
+                });
+            } else {
+                console.error('Microsoft Sign-in button not found. Check the button ID.');
+            }
+
+            // Test MSAL Initialization
+            if (msAuthReady && msalApp) {
+                console.log('MSAL initialized successfully with configuration:', {
+                    clientId: MS_CLIENT_ID,
+                    tenantId: MS_TENANT_ID,
+                    redirectUri: MS_REDIRECT_URI
+                });
+            } else {
+                console.error('MSAL initialization failed. Check MS_CLIENT_ID, MS_TENANT_ID, and MS_REDIRECT_URI.');
+            }
+        });
+
+    </script>
+</body>
+
+</html>
