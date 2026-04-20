@@ -13,11 +13,11 @@
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <!-- Font Awesome for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
+
     <!-- Microsoft Authentication Library (MSAL) -->
     <script src="https://unpkg.com/@azure/msal-browser@2.38.3/lib/msal-browser.min.js"
-            onerror="this.onerror=null; this.src='https://cdnjs.cloudflare.com/ajax/libs/msal/2.38.3/msal-browser.min.js';"
-            crossorigin="anonymous"></script>
+        onerror="this.onerror=null; this.src='https://cdnjs.cloudflare.com/ajax/libs/msal/2.38.3/msal-browser.min.js';"
+        crossorigin="anonymous"></script>
 </head>
 <style>
     :root {
@@ -785,11 +785,12 @@
                 }
 
                 if (!MS_CLIENT_ID || MS_CLIENT_ID === 'YOUR_CLIENT_ID_HERE') {
-                    console.info('Microsoft Client ID not configured.');
+                    console.warn('Microsoft Client ID not configured. Sign-in button will be disabled or warning shown on click.');
                     msLoginBtn.title = 'Microsoft sign-in not configured.';
                     return;
                 }
 
+                console.info('Initializing Microsoft MSAL SDK with Client ID:', MS_CLIENT_ID);
                 try {
                     msalApp = new window.msal.PublicClientApplication({
                         auth: {
@@ -810,6 +811,7 @@
                     // Handle redirect return
                     const redirectResult = await msalApp.handleRedirectPromise();
                     if (redirectResult && redirectResult.account) {
+                        console.info('Microsoft Redirect Login detected for:', redirectResult.account.username);
                         completeSocialLogin('microsoft', {
                             email: redirectResult.account.username || '',
                             name: redirectResult.account.name || '',
@@ -898,20 +900,34 @@
 
             async function verifyLoginCredentials(loginId, password) {
                 const url = `${LOGIN_SCRIPT_URL}?sheet=${encodeURIComponent(LOGIN_SHEET_NAME)}`;
-                const response = await fetch(url, {
-                    method: 'POST',
-                    mode: 'cors',
-                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                    body: JSON.stringify({
-                        action: 'LOGIN_VERIFY',
-                        sheet: LOGIN_SHEET_NAME,
-                        loginId: loginId,
-                        password: password
-                    })
-                });
-                if (!response.ok) throw new Error(`Server returned HTTP ${response.status}`);
-                const text = await response.text();
-                return JSON.parse(text.replace(/^\uFEFF/, '').trim());
+                console.info('Attempting backend verification at:', url);
+                
+                try {
+                    const response = await fetch(url, {
+                        method: 'POST',
+                        mode: 'cors',
+                        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                        body: JSON.stringify({
+                            action: 'LOGIN_VERIFY',
+                            sheet: LOGIN_SHEET_NAME,
+                            loginId: loginId,
+                            password: password
+                        })
+                    });
+                    
+                    if (!response.ok) {
+                        console.error('Network Error:', response.status, response.statusText);
+                        throw new Error(`Server returned HTTP ${response.status}`);
+                    }
+                    
+                    const text = await response.text();
+                    console.log('Raw Backend Response:', text);
+                    
+                    return JSON.parse(text.replace(/^\uFEFF/, '').trim());
+                } catch (err) {
+                    console.error('Fetch/Connection Error:', err);
+                    throw err;
+                }
             }
 
             // Toggle Password Visibility
@@ -952,9 +968,11 @@
                     try {
                         const result = await verifyLoginCredentials(email, password);
                         if (result.success) {
+                            console.info('Login successful for:', email);
                             completeSocialLogin('password', result.user || { email });
                         } else {
-                            setLoginStatus(result.message || 'Invalid credentials.', true);
+                            console.warn('Login rejected by backend:', result.error || result.message);
+                            setLoginStatus(result.message || result.error || 'Invalid credentials.', true);
                         }
                     } catch (error) {
                         console.error('Login error:', error);
