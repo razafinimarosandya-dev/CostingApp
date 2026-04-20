@@ -688,7 +688,7 @@
             // Configuration from localStorage (if set, overrides CONFIG above)
             const DEFAULT_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzSdyx3uNKZPhbhwg_eIc_VmRTvUNF8-Q5z9hunbr7seSuz2nNdO-awDI8qserEQHkr/exec';
             const LOGIN_SCRIPT_URL = localStorage.getItem('ACC_SCRIPT_URL') || DEFAULT_SCRIPT_URL;
-            const LOGIN_SHEET_NAME = (localStorage.getItem('LOGIN_SHEET_NAME') || 'Login').trim() || 'login';
+            const LOGIN_SHEET_NAME = (localStorage.getItem('LOGIN_SHEET_NAME') || 'Login').trim() || 'Login';
 
             // Microsoft Auth Configuration - Priority: localStorage -> Hardcoded CONFIG
             const MS_CLIENT_ID = (localStorage.getItem('ACC_MS_CLIENT_ID') || CONFIG.MS_CLIENT_ID).trim();
@@ -755,7 +755,20 @@
                 const displayName = username || loginId || `${provider} user`;
                 setLoginStatus(`Successfully signed in as ${displayName}`);
 
-                // Notify parent window of successful login
+                // ==========================================================
+                // CRITICAL: DO NOT DELETE THE CODE BELOW
+                // NECESSARY FOR DATA TRANSFER ACROSS DIFFERENT DOMAINS
+                // ==========================================================
+                const sessionData = {
+                    provider,
+                    loginId,
+                    username,
+                    email: user.email || '',
+                    jobTitle: user.jobTitle || ''
+                };
+                const encodedSession = btoa(unescape(encodeURIComponent(JSON.stringify(sessionData))));
+
+                // Notify parent window 
                 window.parent.postMessage({
                     action: 'login',
                     email: user.email || '',
@@ -764,9 +777,14 @@
                     provider
                 }, '*');
 
-                // Auto-redirect to the home portal
+                // Auto-redirect to the Dashboard with session data
                 setTimeout(() => {
-                    window.location.href = "https://costing-home.vercel.app/";
+                    // Using the root URL provided by user (https://costing-home.vercel.app/)
+                    // Query parameters are appended after the trailing slash for reliability
+                    const targetUrl = `https://costing-home.vercel.app/?session=${encodedSession}`;
+                    console.log('!!! REDIRECTING NOW !!!');
+                    console.log('FINAL TARGET URL:', targetUrl);
+                    window.location.href = targetUrl;
                 }, 500);
             }
 
