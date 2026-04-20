@@ -901,7 +901,7 @@
             async function verifyLoginCredentials(loginId, password) {
                 const url = `${LOGIN_SCRIPT_URL}?sheet=${encodeURIComponent(LOGIN_SHEET_NAME)}`;
                 console.info('Attempting backend verification at:', url);
-                
+
                 try {
                     const response = await fetch(url, {
                         method: 'POST',
@@ -914,15 +914,15 @@
                             password: password
                         })
                     });
-                    
+
                     if (!response.ok) {
                         console.error('Network Error:', response.status, response.statusText);
                         throw new Error(`Server returned HTTP ${response.status}`);
                     }
-                    
+
                     const text = await response.text();
                     console.log('Raw Backend Response:', text);
-                    
+
                     return JSON.parse(text.replace(/^\uFEFF/, '').trim());
                 } catch (err) {
                     console.error('Fetch/Connection Error:', err);
