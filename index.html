@@ -686,9 +686,9 @@
             const rememberNewAccount = document.getElementById('rememberNewAccount');
 
             // Configuration from localStorage (if set, overrides CONFIG above)
-            const DEFAULT_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxMVYOSwIwbUchXuqOeH_r5h7Zxu1AWH4WkvxGHciuVYz1a-N2OOrtagBqCbTyRSgdjHA/exec';
+            const DEFAULT_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzSdyx3uNKZPhbhwg_eIc_VmRTvUNF8-Q5z9hunbr7seSuz2nNdO-awDI8qserEQHkr/exec';
             const LOGIN_SCRIPT_URL = localStorage.getItem('ACC_SCRIPT_URL') || DEFAULT_SCRIPT_URL;
-            const LOGIN_SHEET_NAME = (localStorage.getItem('LOGIN_SHEET_NAME') || 'Login').trim() || 'Login';
+            const LOGIN_SHEET_NAME = (localStorage.getItem('LOGIN_SHEET_NAME') || 'Login').trim() || 'login';
 
             // Microsoft Auth Configuration - Priority: localStorage -> Hardcoded CONFIG
             const MS_CLIENT_ID = (localStorage.getItem('ACC_MS_CLIENT_ID') || CONFIG.MS_CLIENT_ID).trim();
