@@ -598,7 +598,6 @@
                 <span>Sign in with Microsoft</span>
             </button>
 
-            <button type="button" id="createAccountBtn" class="create-account-btn">Create New Account</button>
 
             <p id="loginStatus" class="login-status" aria-live="polite"></p>
 
@@ -608,51 +607,6 @@
         </section>
     </main>
 
-    <!-- Create Account Modal -->
-    <div id="createAccountModal" class="modal-backdrop" aria-hidden="true">
-        <section class="modal-card" role="dialog" aria-modal="true" aria-labelledby="createAccountTitle">
-            <div class="modal-head">
-                <h2 id="createAccountTitle">Create Account</h2>
-                <button type="button" id="closeCreateAccountBtn" class="icon-btn" aria-label="Close">×</button>
-            </div>
-            <form id="createAccountForm" class="modal-form">
-                <div>
-                    <label for="newUsername">Username</label>
-                    <input id="newUsername" type="text" placeholder="Enter username" required>
-                </div>
-
-                <div>
-                    <label for="newEmail">Email</label>
-                    <input id="newEmail" type="email" placeholder="you@example.com" required>
-                </div>
-
-                <div>
-                    <label for="newPassword">Password</label>
-                    <input id="newPassword" type="password" placeholder="Create password" required>
-                </div>
-
-                <div>
-                    <label for="newConfirmPassword">Confirm Password</label>
-                    <input id="newConfirmPassword" type="password" placeholder="Re-enter password" required>
-                </div>
-
-                <div>
-                    <label for="newJobTitle">Job Title</label>
-                    <input id="newJobTitle" type="text" placeholder="e.g. Merchandiser" required>
-                </div>
-
-                <div class="remember-me">
-                    <input id="rememberNewAccount" type="checkbox" checked>
-                    <label for="rememberNewAccount">Remember on this device</label>
-                </div>
-
-                <div class="modal-actions">
-                    <button id="cancelCreateAccountBtn" type="button" class="create-account-btn">Cancel</button>
-                    <button type="submit" class="submit-btn">Create Account</button>
-                </div>
-            </form>
-        </section>
-    </div>
 
     <!-- Microsoft Authentication Library -->
 
@@ -673,24 +627,14 @@
             const loginBtn = document.getElementById('loginBtn');
             const loginStatus = document.getElementById('loginStatus');
             const msLoginBtn = document.getElementById('msLoginBtn');
-            const createAccountBtn = document.getElementById('createAccountBtn');
-            const createAccountModal = document.getElementById('createAccountModal');
-            const createAccountForm = document.getElementById('createAccountForm');
-            const closeCreateAccountBtn = document.getElementById('closeCreateAccountBtn');
-            const cancelCreateAccountBtn = document.getElementById('cancelCreateAccountBtn');
-            const newUsernameInput = document.getElementById('newUsername');
-            const newEmailInput = document.getElementById('newEmail');
-            const newPasswordInput = document.getElementById('newPassword');
-            const newConfirmPasswordInput = document.getElementById('newConfirmPassword');
-            const newJobTitleInput = document.getElementById('newJobTitle');
-            const rememberNewAccount = document.getElementById('rememberNewAccount');
 
-            // Configuration from localStorage (if set, overrides CONFIG above)
-            const DEFAULT_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzSdyx3uNKZPhbhwg_eIc_VmRTvUNF8-Q5z9hunbr7seSuz2nNdO-awDI8qserEQHkr/exec';
+            // Configuration du Backend (Google Apps Script)
+            // Laissez DEFAULT_SCRIPT_URL vide si vous préférez utiliser l'URL stockée dans le navigateur (ACC_SCRIPT_URL)
+            const DEFAULT_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxZ4f9sdtoTb2Ps0E5Q8NX1FV7qhfJXEx-AzazDqZLfsnkfKhV3xqEMBPVGdTYuWh8TSg/exec';
             const LOGIN_SCRIPT_URL = localStorage.getItem('ACC_SCRIPT_URL') || DEFAULT_SCRIPT_URL;
-            const LOGIN_SHEET_NAME = (localStorage.getItem('LOGIN_SHEET_NAME') || 'Login').trim() || 'Login';
+            const LOGIN_SHEET_NAME = 'User'; // Mis à jour vers 'User' comme demandé
 
-            // Microsoft Auth Configuration - Priority: localStorage -> Hardcoded CONFIG
+            // Configuration Microsoft Auth (Optionnel)
             const MS_CLIENT_ID = (localStorage.getItem('ACC_MS_CLIENT_ID') || CONFIG.MS_CLIENT_ID).trim();
             const MS_TENANT_ID = (localStorage.getItem('ACC_MS_TENANT_ID') || CONFIG.MS_TENANT_ID).trim();
             const MS_REDIRECT_URI = (localStorage.getItem('ACC_MS_REDIRECT_URI') || CONFIG.MS_REDIRECT_URI).trim();
@@ -1009,24 +953,6 @@
                 msLoginBtn.addEventListener('click', signInWithMicrosoft);
             }
 
-            // Modal Handling
-            if (createAccountBtn && createAccountModal) {
-                createAccountBtn.addEventListener('click', () => {
-                    createAccountModal.classList.add('open');
-                    createAccountModal.setAttribute('aria-hidden', 'false');
-                });
-
-                const closeModal = () => {
-                    createAccountModal.classList.remove('open');
-                    createAccountModal.setAttribute('aria-hidden', 'true');
-                };
-
-                closeCreateAccountBtn?.addEventListener('click', closeModal);
-                cancelCreateAccountBtn?.addEventListener('click', closeModal);
-                createAccountModal.addEventListener('click', (e) => {
-                    if (e.target === createAccountModal) closeModal();
-                });
-            }
 
 
         });
